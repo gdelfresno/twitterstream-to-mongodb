@@ -86,6 +86,18 @@ def updateTerms(options):
     if update:
         updateSearchQuery(options)
            
+def prettyPrintStatus(status):
+    text = status["text"]
+    description = status['user']['screen_name']
+    if "retweeted_status" in status:
+        description = ("%s RT by %s") % (status["retweeted_status"]["user"]["screen_name"], status['user']['screen_name'])
+        text = status["retweeted_status"]["text"]
+    
+    
+    try:
+        return '[%s][%-36s]: %s' % (status['created_at'], description, text)
+    except:
+        return "Error printing status"
 
 class MongoDBCoordinator:
     def __init__(self,host='localhost',database='TwitterStream'):
@@ -113,7 +125,7 @@ class MongoDBCoordinator:
                 collection.save(tweet)
         
                 try:
-                    print "[%-15s] Got tweet from %-16s\t : %s" % (term, tweet["user"]["screen_name"],tweet["text"])           
+                    print "[%-15s]%s" % (term, prettyPrintStatus(tweet))           
                 except Exception as (e):
                     print "Error %s" % e.message
 
