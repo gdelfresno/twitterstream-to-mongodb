@@ -14,26 +14,29 @@ Improvements apreciated.
 
 ## USAGE
 
-	python twitterstreamtomongodb.py --user=gdelfresno --password=XXXXXXX --server=localhost --database=TwitterStream --file=terms-example.txt
+	python twitterstreamtomongodb.py --user=oauth-file.json --server=localhost --database=TwitterStream --file=terms-example.txt
 
 The file just contains the search terms, each one in a line.
 
-user and password are from a Twitter account
+You need to configure an app and the oauth tokens an put it in a file in this way
+
+	{
+		"consumer_key" : "uEQ04CG23CIl4SsRhDKM3w",
+		"consumer_secret" : "06Te8HQVG0A5Ce3ToAdiAhmWVpNavY1RIIn76wjUZJ8",
+		"access_token" : "yJCy4-sj0oZ3QUDBtcu6KisGVp7QhJlNbb3966tDceFW585638j8pyg",
+		"access_token_secret" : "xgt1KMnzAkpulPpAVGLND7IOxuCVSmClK7oBvI"
+	}
 
 ## REQUIREMENTS
 
 ###mongo-python-driver
 [https://github.com/mongodb/mongo-python-driver](https://github.com/mongodb/mongo-python-driver)
 
-###tweetstream
-[https://bitbucket.org/runeh/tweetstream/src](https://bitbucket.org/runeh/tweetstream/src)
+###tweepy
+[https://github.com/tweepy/tweepy](https://github.com/tweepy/tweepy)
 
 ## LICENSE:
 
 Twitter Stream To MongoDB (c) by gdelfresno
 
-Twitter Stream To MongoDB is licensed under a
-Creative Commons Attribution-NonCommercial 3.0 Unported License.
-
-You should have received a copy of the license along with this
-work.  If not, see <http://creativecommons.org/licenses/by-nc/3.0/>.
+Twitter Stream To MongoDB is licensed under the terms of the GNU General Public License as published by the Free Software Foundation.
