@@ -34,18 +34,18 @@ You need to configure an app and the oauth tokens an put it in a file in this wa
 
 ## REQUIREMENTS
 
-###mongo-python-driver
+### mongo-python-driver
 [https://github.com/mongodb/mongo-python-driver](https://github.com/mongodb/mongo-python-driver)
 
     pip install pymongo
     
-### If this doesn't work, install from source
+#### If this doesn't work, install from source
 
     git clone git://github.com/mongodb/mongo-python-driver.git pymongo
     cd pymongo/
     python setup.py install
 
-###tweepy
+### tweepy
 [https://github.com/tweepy/tweepy](https://github.com/tweepy/tweepy)
 
     pip install tweepy
