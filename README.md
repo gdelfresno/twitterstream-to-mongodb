@@ -14,26 +14,41 @@ Improvements apreciated.
 
 ## USAGE
 
-	python twitterstreamtomongodb.py --user=oauth-file.json --server=localhost --database=TwitterStream --file=terms-example.txt
+    python twitterstreamtomongodb.py --oauth=oauth-example.json --server=localhost --database=TwitterStream --file=terms-example.txt
+	
+### EXPLAINED
+    :param oauth: json file that outlines oauth credentials for Twitter developers
+    :param server: default is localhost for basic/local mongodb instances
+    :param database: the name you would like the database to have
+    :param file: basic text outlining search terms such as #trending or @user_name (carriage return per entry)
 
-The file just contains the search terms, each one in a line.
 
 You need to configure an app and the oauth tokens an put it in a file in this way
 
-	{
-		"consumer_key" : "uEQ04CG23CIl4SsRhDKM3w",
-		"consumer_secret" : "06Te8HQVG0A5Ce3ToAdiAhmWVpNavY1RIIn76wjUZJ8",
-		"access_token" : "yJCy4-sj0oZ3QUDBtcu6KisGVp7QhJlNbb3966tDceFW585638j8pyg",
-		"access_token_secret" : "xgt1KMnzAkpulPpAVGLND7IOxuCVSmClK7oBvI"
-	}
+    {
+        "consumer_key" : "ThIsIsJuStAnExAmPlE",
+        "consumer_secret" : "ThIsIsJuStAnExAmPlE",
+        "access_token" : "ThIsIsJuStAnExAmPlE",
+        "access_token_secret" : "ThIsIsJuStAnExAmPlE"
+    }
 
 ## REQUIREMENTS
 
 ###mongo-python-driver
 [https://github.com/mongodb/mongo-python-driver](https://github.com/mongodb/mongo-python-driver)
 
+    pip install pymongo
+    
+### If this doesn't work, install from source
+
+    git clone git://github.com/mongodb/mongo-python-driver.git pymongo
+    cd pymongo/
+    python setup.py install
+
 ###tweepy
 [https://github.com/tweepy/tweepy](https://github.com/tweepy/tweepy)
+
+    pip install tweepy
 
 ## LICENSE:
 
