@@ -17,10 +17,11 @@ Improvements apreciated.
     python twitterstreamtomongodb.py --oauth=oauth-example.json --server=localhost --database=TwitterStream --track=terms-example.txt --retweets=False
 	
 ### EXPLAINED
-    :param oauth: json file that outlines oauth credentials for Twitter developers
-    :param server: default is localhost for basic/local mongodb instances
-    :param database: the name you would like the database to have
-    :param file: basic text outlining search terms such as #trending or @user_name (carriage return per entry)
+    :arg oauth: json file that outlines oauth credentials for Twitter developers
+    :arg server: default is localhost for basic/local mongodb instances
+    :arg database: the name you would like the database to have
+    :arg file: basic text outlining search terms such as #trending or @user_name (carriage return per entry)
+    :arg retweets: specify whether or not retweets are collected and stored in the database
 
 
 You need to configure an app and the oauth tokens an put it in a file in this way
