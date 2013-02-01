@@ -14,7 +14,7 @@ Improvements apreciated.
 
 ## USAGE
 
-    python twitterstreamtomongodb.py --oauth=oauth-example.json --server=localhost --database=TwitterStream --file=terms-example.txt
+    python twitterstreamtomongodb.py --oauth=oauth-example.json --server=localhost --database=TwitterStream --terms=terms-example.txt --retweets=False
 	
 ### EXPLAINED
     :param oauth: json file that outlines oauth credentials for Twitter developers
