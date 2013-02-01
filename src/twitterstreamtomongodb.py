@@ -45,6 +45,7 @@ def get_parser():
     parser.add_option("-f", "--file", dest="file", help="terms file")
     #parser.add_option("-a", "--all_keys", dest="all_keys", help="MongoDB receives all keys from json")
     #parser.add_option("-u", "--use_keys", dest="use_keys", help="MongoDB receieves subset of keys from json")
+    parser.add_option("-r", "--retweets", dest="retweets", help="specify whether or not retweets are added to the database")
     parser.usage = "bad parametres"
     return parser
  
@@ -136,10 +137,11 @@ class MongoDBCoordinator:
     def addTuit(self, tweet):
         for term in active_terms.keys():
             
-            content = tweet['text']
             if "retweeted_status" in tweet:
                 content = tweet["retweeted_status"]["text"]
-                
+            else:
+                content = tweet['text']
+
             strre = re.compile(term, re.IGNORECASE)
             match = strre.search(content)
             
@@ -168,7 +170,14 @@ class MongoDBListener(StreamListener):
         Override this method if you wish to manually handle
         the stream data. Return False to stop stream and close connection.
         """
-        if 'in_reply_to_status_id' in data:
+        if 'retweeted_status' in data:
+            if options.retweets in ["False", "F", "false", "f"]:
+                pass
+            else:
+                jstatus = json.loads(data)
+                mongo.addTuit(jstatus)
+        
+        elif 'in_reply_to_status_id' in data:
             jstatus = json.loads(data)
             mongo.addTuit(jstatus)
             
