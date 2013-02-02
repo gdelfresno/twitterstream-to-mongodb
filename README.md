@@ -14,6 +14,7 @@ Improvements apreciated.
 
 ## USAGE
 
+    git clone git://github.com/gdelfresno/twitterstream-to-mongodb.git
     cd twitterstream-to-mongodb/src
     python twitterstreamtomongodb.py --oauth=oauth-example.json --server=localhost --database=TwitterStream --track=terms-example.txt --retweets=False
 	
