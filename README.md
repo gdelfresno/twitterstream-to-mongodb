@@ -62,4 +62,6 @@ Improvements apreciated.
 
     Twitter Stream To MongoDB (c) by gdelfresno
 
-    Twitter Stream To MongoDB is licensed under the terms of the GNU General Public License as published by the Free Software Foundation.
+    Twitter Stream To MongoDB is licensed under 
+    the terms of the GNU General Public License 
+    as published by the Free Software Foundation.
