@@ -12,7 +12,7 @@ A catalog is created for each term in the MongoDB database.
 
 Improvements apreciated.
 
-## USAGE
+## CLONE AND USE
 
     git clone git://github.com/gdelfresno/twitterstream-to-mongodb.git
     cd twitterstream-to-mongodb/src
