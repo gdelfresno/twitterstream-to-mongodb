@@ -17,7 +17,7 @@ Improvements apreciated.
     cd twitterstream-to-mongodb/src
     python twitterstreamtomongodb.py --oauth=oauth-example.json --server=localhost --database=TwitterStream --track=terms-example.txt --retweets=False
 	
-### EXPLAINED
+### USAGE EXPLAINED
     :arg oauth: json file that outlines oauth credentials for Twitter developers
     :arg server: default is localhost for basic/local mongodb instances
     :arg database: the name you would like the database to have
@@ -34,7 +34,7 @@ Improvements apreciated.
         "access_token_secret" : "ThIsIsJuStAnExAmPlE"
     }
 
-#### Track (basic text)
+#### TRACK (basic text)
     
     SomeWord
     @user_name
