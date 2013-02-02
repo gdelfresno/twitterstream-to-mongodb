@@ -2,7 +2,7 @@
 
 ## DESCRIPTION
 
-Simple python script for storing tweets from the twitter stream directly to a [MongDB](http://www.mongodb.org/) database based on a list of terms.
+Simple python script for storing tweets from the twitter stream directly to a [MongoDB](http://www.mongodb.org/) database based on a list of terms.
 
 ## FEATURES/PROBLEMS
 
@@ -20,7 +20,7 @@ Improvements apreciated.
     :arg oauth: json file that outlines oauth credentials for Twitter developers
     :arg server: default is localhost for basic/local mongodb instances
     :arg database: the name you would like the database to have
-    :arg file: basic text outlining search terms such as #trending or @user_name (carriage return per entry)
+    :arg track: basic text outlining search terms such as #trending or @user_name (carriage return per entry)
     :arg retweets: specify whether or not retweets are collected and stored in the database
 
 
