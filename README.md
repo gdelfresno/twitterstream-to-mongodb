@@ -25,7 +25,7 @@ Improvements apreciated.
     :arg retweets: specify whether or not retweets are collected and stored in the database
 
 
-You need to configure an app and the oauth tokens an put it in a file in this way
+### OAUTH file must contain Twitter developer credentials in json format
 
     {
         "consumer_key" : "ThIsIsJuStAnExAmPlE",
@@ -54,6 +54,6 @@ You need to configure an app and the oauth tokens an put it in a file in this wa
 
 ## LICENSE:
 
-Twitter Stream To MongoDB (c) by gdelfresno
+    Twitter Stream To MongoDB (c) by gdelfresno
 
-Twitter Stream To MongoDB is licensed under the terms of the GNU General Public License as published by the Free Software Foundation.
+    Twitter Stream To MongoDB is licensed under the terms of the GNU General Public License as published by the Free Software Foundation.
