@@ -25,7 +25,7 @@ Improvements apreciated.
     :arg retweets: specify whether or not retweets are collected and stored in the database
 
 
-### OAUTH file must contain Twitter developer credentials in json format
+#### OAUTH (json)
 
     {
         "consumer_key" : "ThIsIsJuStAnExAmPlE",
@@ -33,6 +33,12 @@ Improvements apreciated.
         "access_token" : "ThIsIsJuStAnExAmPlE",
         "access_token_secret" : "ThIsIsJuStAnExAmPlE"
     }
+
+#### Track (basic text)
+    
+    SomeWord
+    @user_name
+    #hashtag
 
 ## REQUIREMENTS
 
