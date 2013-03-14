@@ -10,7 +10,7 @@ function map() {
 		emit(rtUser, { outlinks : [] , indegree : 1, outdegree : 0 });
 		
 	} else if (isReply){
-		var repliedUser = this.in_reply_to_screen_name;
+		repliedUser = this.in_reply_to_screen_name;
 		emit(user, { outlinks : [repliedUser] , indegree : 0, outdegree : 1 });
 		emit(repliedUser, { outlinks : [] , indegree : 1, outdegree : 0 });
 	}

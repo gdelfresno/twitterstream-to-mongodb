@@ -8,7 +8,7 @@ function map() {
 		emit(rtUser, { rt : 1, rtDone : 0, replies : 0, repliesReceived :0 , mentions : 0, mentionsReceived : 0, tweets : 0  });
 		
 	} else if (isReply){
-		var repliedUser = this.in_reply_to_screen_name;
+		repliedUser = this.in_reply_to_screen_name;
 		emit(user, { rt : 0, rtDone : 0, replies : 1, repliesReceived :0 , mentions : 0, mentionsReceived : 0, tweets : 0  });
 		emit(repliedUser, { rt : 0, rtDone : 0, replies : 0, repliesReceived :1 , mentions : 0, mentionsReceived : 0, tweets : 0  });
 	}

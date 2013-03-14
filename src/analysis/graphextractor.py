@@ -91,7 +91,7 @@ for user in db[mapcollection].find().sort([('value.indegree',-1)]).limit(500):
 for name in userMap.keys():
     outlinks = userMap[name]['outlinks']
     for link in outlinks:
-        if link in userMap.keys():
+        if link != name and link in userMap.keys():
             graphdb.createRelationship(userNodeMap[name], userNodeMap[link]);
 
 graphdb.shutdown()
