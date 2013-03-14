@@ -41,6 +41,8 @@ def get_parser():
     parser = OptionParser()
     parser.add_option("-d", "--database", dest="database", help="mongodb database name")
     parser.add_option("-s", "--server", dest="server", help="mongodb host")
+    parser.add_option("-p", "--port", dest="port", help="mongodb port", type="int")
+    parser.add_option("-a", "--dbauth", dest="dbauth", help="db auth file")
     parser.add_option("-o", "--oauth", dest="oauthfile", help="file with oauth options")
     parser.add_option("-t", "--track", dest="track", help="track terms file")
     #parser.add_option("-a", "--all_keys", dest="all_keys", help="MongoDB receives all keys from json (True/False)")
@@ -123,14 +125,22 @@ def prettyPrintStatus(status):
 
 
 class MongoDBCoordinator:
-    def __init__(self, host='localhost', database='TwitterStream'):
+    def __init__(self, host='localhost', port=None, database='TwitterStream', authfile=None):
         try:
-            self.mongo = Connection(host)
+            if not port is None:
+                self.mongo = Connection(host, int(port))
+            else:
+                self.mongo = Connection(host)
         except:
             print "Error starting MongoDB"
             raise
         
         self.db = self.mongo[database]
+
+        if not authfile is None:
+            dbauth = json.loads(open(authfile,'r').read())
+            self.db.authenticate(dbauth["user"],dbauth["password"])
+        
         self.tuits = {}
 
 
@@ -241,7 +251,7 @@ if __name__ == "__main__":
     (options, args) = parser.parse_args()
     print options, args
     
-    mongo = MongoDBCoordinator(options.server, options.database)
+    mongo = MongoDBCoordinator(options.server, options.port, options.database, options.dbauth)
     streamThread = StreamConsumerThreadClass('', options.oauthfile)
     
     try:

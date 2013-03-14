@@ -16,15 +16,23 @@ Improvements apreciated.
 
     git clone git://github.com/gdelfresno/twitterstream-to-mongodb.git
     cd twitterstream-to-mongodb/src
-    python twitterstreamtomongodb.py --oauth=oauth-example.json --server=localhost --database=TwitterStream --track=terms-example.txt --retweets=False
+    python twitterstreamtomongodb.py --oauth=oauth-example.json --server=localhost --port=23717 --database=TwitterStream --dbauth=dbauth.json --track=terms-example.txt --retweets=False
 	
 ### USAGE EXPLAINED
     :arg oauth: json file that outlines oauth credentials for Twitter developers
     :arg server: default is localhost for basic/local mongodb instances
+    :arg port: optional port of the mongodb instance
     :arg database: the name you would like the database to have
+    :arg dbauth: auth file with database credentials
     :arg track: basic text outlining search terms such as #trending or @user_name (carriage return per entry)
     :arg retweets: specify whether or not retweets are collected and stored in the database
 
+#### DATABASE AUTH (json)
+
+    {
+        "user" : "yor_user",
+        "password" : "your_password"
+    }
 
 #### OAUTH (json)
 
