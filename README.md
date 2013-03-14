@@ -2,7 +2,7 @@
 
 ## DESCRIPTION
 
-Simple python script for storing tweets from the twitter stream directly to a [MongDB](http://www.mongodb.org/) database based on a list of terms.
+Simple python script for storing tweets from the twitter stream directly to a [MongoDB](http://www.mongodb.org/) database based on a list of terms.
 
 ## FEATURES/PROBLEMS
 
@@ -12,31 +12,57 @@ A catalog is created for each term in the MongoDB database.
 
 Improvements apreciated.
 
-## USAGE
+## CLONE AND USE
 
-	python twitterstreamtomongodb.py --user=oauth-file.json --server=localhost --database=TwitterStream --file=terms-example.txt
+    git clone git://github.com/gdelfresno/twitterstream-to-mongodb.git
+    cd twitterstream-to-mongodb/src
+    python twitterstreamtomongodb.py --oauth=oauth-example.json --server=localhost --database=TwitterStream --track=terms-example.txt --retweets=False
+	
+### USAGE EXPLAINED
+    :arg oauth: json file that outlines oauth credentials for Twitter developers
+    :arg server: default is localhost for basic/local mongodb instances
+    :arg database: the name you would like the database to have
+    :arg track: basic text outlining search terms such as #trending or @user_name (carriage return per entry)
+    :arg retweets: specify whether or not retweets are collected and stored in the database
 
-The file just contains the search terms, each one in a line.
 
-You need to configure an app and the oauth tokens an put it in a file in this way
+#### OAUTH (json)
 
-	{
-		"consumer_key" : "uEQ04CG23CIl4SsRhDKM3w",
-		"consumer_secret" : "06Te8HQVG0A5Ce3ToAdiAhmWVpNavY1RIIn76wjUZJ8",
-		"access_token" : "yJCy4-sj0oZ3QUDBtcu6KisGVp7QhJlNbb3966tDceFW585638j8pyg",
-		"access_token_secret" : "xgt1KMnzAkpulPpAVGLND7IOxuCVSmClK7oBvI"
-	}
+    {
+        "consumer_key" : "ThIsIsJuStAnExAmPlE",
+        "consumer_secret" : "ThIsIsJuStAnExAmPlE",
+        "access_token" : "ThIsIsJuStAnExAmPlE",
+        "access_token_secret" : "ThIsIsJuStAnExAmPlE"
+    }
+
+#### TRACK (basic text)
+    
+    SomeWord
+    @user_name
+    #hashtag
 
 ## REQUIREMENTS
 
-###mongo-python-driver
+### mongo-python-driver
 [https://github.com/mongodb/mongo-python-driver](https://github.com/mongodb/mongo-python-driver)
 
-###tweepy
+    pip install pymongo
+    
+#### If this doesn't work, install from source
+
+    git clone git://github.com/mongodb/mongo-python-driver.git pymongo
+    cd pymongo/
+    python setup.py install
+
+### tweepy
 [https://github.com/tweepy/tweepy](https://github.com/tweepy/tweepy)
+
+    pip install tweepy
 
 ## LICENSE:
 
-Twitter Stream To MongoDB (c) by gdelfresno
+    Twitter Stream To MongoDB (c) by gdelfresno
 
-Twitter Stream To MongoDB is licensed under the terms of the GNU General Public License as published by the Free Software Foundation.
+    Twitter Stream To MongoDB is licensed under 
+    the terms of the GNU General Public License 
+    as published by the Free Software Foundation.
