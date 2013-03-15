@@ -27,7 +27,7 @@ from ssl import SSLError
 
 from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
-from tweepy import Stream
+from tweepy import Stream, API
 from tweepy.utils import import_simplejson
 
 json = import_simplejson()
@@ -138,8 +138,15 @@ class MongoDBCoordinator:
         self.db = self.mongo[database]
 
         if not authfile is None:
-            dbauth = json.loads(open(authfile,'r').read())
-            self.db.authenticate(dbauth["user"],dbauth["password"])
+            
+            try:
+                dbauth = json.loads(open(authfile, 'r').read())
+                if not self.db.authenticate(dbauth["user"], dbauth["password"]):
+                    raise Exception("Invalid database credentials")
+
+            except:
+                print "Error authenticating database"
+                raise
         
         self.tuits = {}
 
@@ -200,10 +207,9 @@ class MongoDBListener(StreamListener):
             if self.on_limit(json.loads(data)['limit']['track']) is False:
                 return False
 
-
-    def on_error(self, status):
-        print status
-
+    def on_error(self, status_code):
+        print "Error received %d" % status_code
+        return
 
     def on_limit(self, track):
         print "###### LIMIT ERROR #######"
@@ -217,11 +223,22 @@ class StreamConsumerThreadClass(threading.Thread):
         self.name = term
         self.consume = True
         
-        oauth = json.loads(open(oauthfile, 'r').read())
-        
         listener = MongoDBListener()
-        auth = OAuthHandler(oauth['consumer_key'], oauth['consumer_secret'])
-        auth.set_access_token(oauth['access_token'], oauth['access_token_secret'])
+        
+        try:
+            oauth = json.loads(open(oauthfile, 'r').read())
+            
+            auth = OAuthHandler(oauth['consumer_key'], oauth['consumer_secret'])
+            auth.set_access_token(oauth['access_token'], oauth['access_token_secret'])
+
+            api = API(auth)
+
+            if not api.verify_credentials():
+                raise Exception("Invalid credentials")
+
+        except:
+            print "Error logging to Twitter"
+            raise
     
         self.stream = Stream(auth, listener, timeout=60)  
 
@@ -251,9 +268,13 @@ if __name__ == "__main__":
     (options, args) = parser.parse_args()
     print options, args
     
-    mongo = MongoDBCoordinator(options.server, options.port, options.database, options.dbauth)
-    streamThread = StreamConsumerThreadClass('', options.oauthfile)
-    
+    try:
+        mongo = MongoDBCoordinator(options.server, options.port, options.database, options.dbauth)
+        streamThread = StreamConsumerThreadClass('', options.oauthfile)
+    except Exception, e:
+        print e
+        exit(0)
+
     try:
         while True:
             updateTerms(options)
