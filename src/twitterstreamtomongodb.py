@@ -26,7 +26,7 @@ from pymongo import Connection
 from ssl import SSLError
 
 from tweepy.streaming import StreamListener
-from tweepy import OAuthHandler
+from tweepy import OAuthHandler, BasicAuthHandler
 from tweepy import Stream, API
 from tweepy.utils import import_simplejson
 
@@ -35,6 +35,7 @@ json = import_simplejson()
 active_terms = {}
 
 STREAM_URL = "https://stream.twitter.com/1/statuses/filter.json?track=%s"
+streamThread = None
 
 
 def get_parser():
@@ -208,8 +209,11 @@ class MongoDBListener(StreamListener):
                 return False
 
     def on_error(self, status_code):
-        print "Error received %d" % status_code
-        return
+        if status_code == 401:
+            raise Exception("Invalid loging credentials")    
+        else:
+            print "Error received %d" % status_code
+        
 
     def on_limit(self, track):
         print "###### LIMIT ERROR #######"
@@ -228,13 +232,15 @@ class StreamConsumerThreadClass(threading.Thread):
         try:
             oauth = json.loads(open(oauthfile, 'r').read())
             
-            auth = OAuthHandler(oauth['consumer_key'], oauth['consumer_secret'])
-            auth.set_access_token(oauth['access_token'], oauth['access_token_secret'])
+            if 'consumer_key' in oauth:
+                auth = OAuthHandler(oauth['consumer_key'], oauth['consumer_secret'])
+                auth.set_access_token(oauth['access_token'], oauth['access_token_secret'])
+                api = API(auth)
 
-            api = API(auth)
-
-            if not api.verify_credentials():
-                raise Exception("Invalid credentials")
+                if not api.verify_credentials():
+                    raise Exception("Invalid credentials")
+            else:
+                auth = BasicAuthHandler(oauth['username'], oauth['password'])
 
         except:
             print "Error logging to Twitter"
@@ -260,8 +266,10 @@ class StreamConsumerThreadClass(threading.Thread):
             
             except SSLError, e:
                 print e
-                connected = False            
-
+                connected = False
+            except Exception, e:
+                print "Stream error"
+                raise e
 
 if __name__ == "__main__":
     parser = get_parser()

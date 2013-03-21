@@ -36,11 +36,20 @@ Improvements apreciated.
 
 #### OAUTH (json)
 
+_Oauth Authentication_:
+
     {
         "consumer_key" : "ThIsIsJuStAnExAmPlE",
         "consumer_secret" : "ThIsIsJuStAnExAmPlE",
         "access_token" : "ThIsIsJuStAnExAmPlE",
         "access_token_secret" : "ThIsIsJuStAnExAmPlE"
+    }
+
+_Basic Authentication_:
+
+    {
+        "username" : "twitter_username"
+        "password" : "password"
     }
 
 #### TRACK (basic text)
