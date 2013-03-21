@@ -39,12 +39,12 @@ class NeoCreator:
 def get_parser():
     optParser = OptionParser()
     optParser.add_option("-d", "--database", dest="database", help="mongodb database name")
-    optParser.add_option("-s", "--server", dest="server", help="mongodb host")
+    optParser.add_option("-s", "--server", dest="server", help="mongodb host", default=None)
     optParser.add_option("-t", "--term", dest="term", help="collection name")
     optParser.add_option("-m", "--mapcollection", dest="mapcollection", help="map reduce collection")
     optParser.add_option("-o", "--output", dest="output", help="output file")
-    optParser.add_option("-i", "--start", dest="start", help="start date")
-    optParser.add_option("-e", "--end", dest="end", help="end date")
+    optParser.add_option("-i", "--start", dest="start", help="start date", default=None)
+    optParser.add_option("-e", "--end", dest="end", help="end date", default=None)
     optParser.usage = "bad parametres"
     return optParser
 
@@ -57,15 +57,20 @@ database = options.database
 term = options.term
 mapcollection = options.mapcollection
 output = options.output
-start = datetime.strptime(options.start,"%d/%m/%Y")
-end = datetime.strptime(options.end,"%d/%m/%Y")
+
+start = None if options.start is None else datetime.strptime(options.start,"%d/%m/%Y")
+end = None if options.end is None else datetime.strptime(options.end,"%d/%m/%Y")
 
 def getDateQuery(start_date,end_date): 
 
-    oid_start = ObjectId.from_datetime(start_date)
-    oid_stop = ObjectId.from_datetime(end_date)
-    
-    return { "_id" : { "$gte" : oid_start, "$lt" : oid_stop } }
+    if not start_date is None and not end_date is None:
+        oid_start = ObjectId.from_datetime(start_date)
+        oid_stop = ObjectId.from_datetime(end_date)
+        
+        return { "_id": { "$gte": oid_start, "$lt": oid_stop } }
+    else:
+
+        return None
 
 try:
     mongo = Connection(host)
@@ -77,8 +82,8 @@ db = mongo[database]
 collection = db[term]
 #db.drop_collection(mapcollection)
 if not mapcollection in db.collection_names():
-    mapF = Code(open('mapReduce/mapGraph.js','r').read())
-    reduceF = Code(open('mapReduce/reduceGraph.js','r').read())
+    mapF = Code(open('../mapReduce/mapGraph.js','r').read())
+    reduceF = Code(open('../mapReduce/reduceGraph.js','r').read())
     collection.map_reduce(mapF,reduceF,query=getDateQuery(start,end), out=mapcollection)
 
 graphdb = NeoCreator(output)
