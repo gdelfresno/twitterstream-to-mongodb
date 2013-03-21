@@ -6,13 +6,13 @@ function map() {
 	if (isRT){
 		var rtUser = this.retweeted_status.user.screen_name;
 		
-		emit(user, { outlinks : [rtUser] , indegree : 0, outdegree: 1 });
-		emit(rtUser, { outlinks : [] , indegree : 1, outdegree : 0 });
+		emit(user, { outlinks : [rtUser] , indegree : 0, outdegree: 1, rts: 0, mts: 0});
+		emit(rtUser, { outlinks : [] , indegree : 1, outdegree : 0, rts: 1, mts: 0 });
 		
 	} else if (isReply){
 		repliedUser = this.in_reply_to_screen_name;
-		emit(user, { outlinks : [repliedUser] , indegree : 0, outdegree : 1 });
-		emit(repliedUser, { outlinks : [] , indegree : 1, outdegree : 0 });
+		emit(user, { outlinks : [repliedUser] , indegree : 0, outdegree : 1, rts: 0, mts: 0 });
+		emit(repliedUser, { outlinks : [] , indegree : 1, outdegree : 0, rts: 0, mts: 1 });
 	}
 	
 	if (!isRT){
@@ -21,8 +21,8 @@ function map() {
 			var mention = mentions[i];
 			var mentionUser = mention.screen_name;
 			if (mentionUser !== repliedUser){
-				emit(user, { outlinks : [mentionUser] , indegree : 0, outdegree : 1 });
-				emit(mentionUser, { outlinks : [] , indegree : 1, outdegree : 0 });
+				emit(user, { outlinks : [mentionUser] , indegree : 0, outdegree : 1, rts: 0, mts: 0 });
+				emit(mentionUser, { outlinks : [] , indegree : 1, outdegree : 0, rts: 0, mts: 1 });
 			}
 		}
 	}

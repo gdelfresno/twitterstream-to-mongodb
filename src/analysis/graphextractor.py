@@ -5,36 +5,17 @@ Created on 07/10/2012
 '''
 from pymongo import Connection
 from bson.code import Code
-from bson import BSON
 from bson import json_util
 from bson.objectid import ObjectId
 from optparse import OptionParser
 from dateutil import parser
-from neo4j import GraphDatabase
+from gexf import Gexf
 
 import datetime
 from datetime import datetime
 
 import simplejson as json
 
-class NeoCreator:
-    def __init__(self,path):
-        self.db = GraphDatabase(path)
-        
-    def shutdown(self):
-        self.db.shutdown()
-        
-    def createNewNode(self,_id,nick):
-        with self.db.transaction:
-            newNode = self.db.node(uid=_id,Label=nick)
-            if newNode is None:
-                raise
-            
-        return newNode
-    
-    def createRelationship(self,origin,destiny):
-        with self.db.transaction:
-            origin.tweets(destiny,Label="tweets")
 
 def get_parser():
     optParser = OptionParser()
@@ -80,23 +61,34 @@ except:
 
 db = mongo[database]
 collection = db[term]
-#db.drop_collection(mapcollection)
+# db.drop_collection(mapcollection)
 if not mapcollection in db.collection_names():
     mapF = Code(open('../mapReduce/mapGraph.js','r').read())
     reduceF = Code(open('../mapReduce/reduceGraph.js','r').read())
     collection.map_reduce(mapF,reduceF,query=getDateQuery(start,end), out=mapcollection)
 
-graphdb = NeoCreator(output)
+gexf = Gexf(creator="lomo", description="Relations")
+graph = gexf.addGraph(type="directed", mode="static", label="relations")
+giid = graph.addNodeAttribute("Global Indegree", "0", type="float")
+goid = graph.addNodeAttribute("Global Outdegree", "0", type="float")
+gort = graph.addNodeAttribute("Retweets", "0", type="float")
+gomt = graph.addNodeAttribute("Mentions", "0", type="float")
 userMap = {} 
 userNodeMap = {}
-for user in db[mapcollection].find().sort([('value.indegree',-1)]).limit(500):
-    userMap[user['_id']] = user['value'];
-    userNodeMap[user['_id']] = graphdb.createNewNode(user['_id'], user['_id'])
+for user in db[mapcollection].find().sort([('value.indegree', -1)]):
+    userMap[user['_id']] = user['value']
+    node = graph.addNode(user['_id'], user['_id'])
+    node.addAttribute(giid, user['value']['indegree'])
+    node.addAttribute(goid, user['value']['outdegree'])
+    node.addAttribute(gort, user['value']['rts'])
+    node.addAttribute(gomt, user['value']['mts'])
+    userNodeMap[user['_id']] = node
     
 for name in userMap.keys():
     outlinks = userMap[name]['outlinks']
     for link in outlinks:
         if link != name and link in userMap.keys():
-            graphdb.createRelationship(userNodeMap[name], userNodeMap[link]);
+            graph.addEdge(name + ":" + link, userNodeMap[name].id, userNodeMap[link].id)
 
-graphdb.shutdown()
+file = open(output, 'w')
+gexf.write(file)
