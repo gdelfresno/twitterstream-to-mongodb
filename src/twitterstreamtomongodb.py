@@ -48,7 +48,7 @@ def get_parser():
     parser.add_option("-t", "--track", dest="track", help="track terms file")
     #parser.add_option("-a", "--all_keys", dest="all_keys", help="MongoDB receives all keys from json (True/False)")
     #parser.add_option("-u", "--use_keys", dest="use_keys", help="MongoDB receieves subset of keys from json (list)")
-    parser.add_option("-r", "--retweets", dest="retweets", help="Allow retweets into MongoDB")
+    parser.add_option("-e", "--exclude-retweets", action="store_true", dest="exclude_retweets", help="Exclude retweets from stream", default=False)
     parser.usage = "bad parametres"
     return parser
 
@@ -189,7 +189,7 @@ class MongoDBListener(StreamListener):
         the stream data. Return False to stop stream and close connection.
         """
         if 'retweeted_status' in data:
-            if options.retweets in ["False", "F", "false", "f"]:
+            if options.exclude_retweets:
                 pass
             else:
                 jstatus = json.loads(data)
