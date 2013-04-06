@@ -78,10 +78,10 @@ userNodeMap = {}
 for user in db[mapcollection].find().sort([('value.indegree', -1)]):
     userMap[user['_id']] = user['value']
     node = graph.addNode(user['_id'], user['_id'])
-    node.addAttribute(giid, user['value']['indegree'])
-    node.addAttribute(goid, user['value']['outdegree'])
-    node.addAttribute(gort, user['value']['rts'])
-    node.addAttribute(gomt, user['value']['mts'])
+    node.addAttribute(giid, str(user['value']['indegree']))
+    node.addAttribute(goid, str(user['value']['outdegree']))
+    node.addAttribute(gort, str(user['value']['rts']))
+    node.addAttribute(gomt, str(user['value']['mts']))
     userNodeMap[user['_id']] = node
     
 for name in userMap.keys():
