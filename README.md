@@ -60,6 +60,10 @@ _Basic Authentication_:
 
 ## REQUIREMENTS
 
+### Install from requirements file
+
+    pip install -r requirements.txt
+
 ### mongo-python-driver
 [https://github.com/mongodb/mongo-python-driver](https://github.com/mongodb/mongo-python-driver)
 
