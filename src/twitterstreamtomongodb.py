@@ -26,7 +26,7 @@ from pymongo import Connection
 from ssl import SSLError
 
 from tweepy.streaming import StreamListener
-from tweepy import OAuthHandler, BasicAuthHandler
+from tweepy import OAuthHandler
 from tweepy import Stream, API
 from tweepy.utils import import_simplejson
 
@@ -239,8 +239,6 @@ class StreamConsumerThreadClass(threading.Thread):
 
                 if not api.verify_credentials():
                     raise Exception("Invalid credentials")
-            else:
-                auth = BasicAuthHandler(oauth['username'], oauth['password'])
 
         except:
             print "Error logging to Twitter"
