@@ -20,8 +20,8 @@ def get_parser():
     optParser.add_option("-t", "--term", dest="term", help="collection name")
     optParser.add_option("-m", "--mapcollection", dest="mapcollection", help="map reduce collection")
     optParser.add_option("-o", "--output", dest="output", help="output file")
-    optParser.add_option("-i", "--start", dest="start", help="start date")
-    optParser.add_option("-e", "--end", dest="end", help="end date")
+    optParser.add_option("-i", "--start", dest="start", help="start date", default=None)
+    optParser.add_option("-e", "--end", dest="end", help="end date", default=None)
     optParser.add_option("-k", "--mode", dest="mode", default="users",
                       help="interaction mode: users or tweets [default: %default]")
     optParser.usage = "bad parametres"
@@ -36,8 +36,8 @@ database = options.database
 term = options.term
 mapcollection = options.mapcollection
 output = options.output
-start = datetime.strptime(options.start,"%d/%m/%Y")
-end = datetime.strptime(options.end,"%d/%m/%Y")
+start = None if options.start is None else datetime.strptime(options.start,"%d/%m/%Y")
+end = None if options.end is None else datetime.strptime(options.end,"%d/%m/%Y")
 mode = options.mode
 
 def getDateQuery(start_date,end_date): 
