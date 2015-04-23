@@ -1,8 +1,5 @@
-lxml==3.3.5
+lxml==3.4.3
 pygexf==0.2.2
 pymongo==3.0.1
-python-dateutil==2.1
-simplejson==3.6.3
-six==1.7.3
-tweepy==2.3.0
-wsgiref==0.1.2
+simplejson==3.6.5
+tweepy==3.3.0
