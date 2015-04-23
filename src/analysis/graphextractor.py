@@ -3,7 +3,6 @@ Created on 07/10/2012
 
 @author: gdelfresno
 '''
-from pymongo import Connection
 from bson.code import Code
 from bson import json_util
 from bson.objectid import ObjectId
@@ -15,6 +14,7 @@ import datetime
 from datetime import datetime
 
 import simplejson as json
+from pymongo import MongoClient
 
 
 def get_parser():
@@ -54,7 +54,7 @@ def getDateQuery(start_date,end_date):
         return None
 
 try:
-    mongo = Connection(host)
+    mongo = MongoClient(host)
 except:
     print "Error starting MongoDB"
     raise

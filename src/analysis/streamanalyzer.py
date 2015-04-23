@@ -3,7 +3,7 @@ Created on 04/10/2012
 
 @author: gdelfresno
 '''
-from pymongo import Connection
+from pymongo import MongoClient
 from bson.code import Code
 from bson import BSON
 from bson import json_util
@@ -49,7 +49,7 @@ def getDateQuery(start_date,end_date):
     return { "_id" : { "$gte" : oid_start, "$lt" : oid_stop } }
 
 try:
-    mongo = Connection(host)
+    mongo = MongoClient(host)
 except:
     print "Error starting MongoDB"
     raise

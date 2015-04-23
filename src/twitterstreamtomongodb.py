@@ -21,7 +21,7 @@ import time
 import re
 
 from optparse import OptionParser
-from pymongo import Connection
+from pymongo import MongoClient
 
 from ssl import SSLError
 
@@ -129,9 +129,9 @@ class MongoDBCoordinator:
     def __init__(self, host='localhost', port=None, database='TwitterStream', authfile=None):
         try:
             if not port is None:
-                self.mongo = Connection(host, int(port))
+                self.mongo = MongoClient(host, int(port))
             else:
-                self.mongo = Connection(host)
+                self.mongo = MongoClient(host)
         except:
             print "Error starting MongoDB"
             raise
