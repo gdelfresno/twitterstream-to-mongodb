@@ -3,18 +3,13 @@ Created on 07/10/2012
 
 @author: gdelfresno
 '''
-from bson.code import Code
-from bson import json_util
-from bson.objectid import ObjectId
 from optparse import OptionParser
-from dateutil import parser
-from gexf import Gexf
-
-import datetime
 from datetime import datetime
 
-import simplejson as json
 from pymongo import MongoClient
+from bson.code import Code
+from bson.objectid import ObjectId
+from gexf import Gexf
 
 
 def get_parser():

@@ -5,13 +5,9 @@ Created on 04/10/2012
 '''
 from pymongo import MongoClient
 from bson.code import Code
-from bson import BSON
 from bson import json_util
 from bson.objectid import ObjectId
 from optparse import OptionParser
-from dateutil import parser
-
-import datetime
 from datetime import datetime
 
 import simplejson as json
