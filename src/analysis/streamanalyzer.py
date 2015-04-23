@@ -22,6 +22,8 @@ def get_parser():
     optParser.add_option("-o", "--output", dest="output", help="output file")
     optParser.add_option("-i", "--start", dest="start", help="start date")
     optParser.add_option("-e", "--end", dest="end", help="end date")
+    optParser.add_option("-k", "--mode", dest="mode", default="users",
+                      help="interaction mode: users or tweets [default: %default]")
     optParser.usage = "bad parametres"
     return optParser
 
@@ -36,6 +38,7 @@ mapcollection = options.mapcollection
 output = options.output
 start = datetime.strptime(options.start,"%d/%m/%Y")
 end = datetime.strptime(options.end,"%d/%m/%Y")
+mode = options.mode
 
 def getDateQuery(start_date,end_date): 
 
@@ -96,5 +99,10 @@ def analyzeUsers():
         
     jsonFile.write(']')
     jsonFile.close()
-    
-analyzeUsers()    
+
+if mode == 'users':
+    analyzeUsers()
+elif mode == 'tweets':
+    analyzeTweets()
+else:
+    print "Unknow mode. It should be users or tweets"
