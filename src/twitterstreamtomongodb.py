@@ -34,9 +34,6 @@ json = import_simplejson()
 
 active_terms = {}
 
-STREAM_URL = "https://stream.twitter.com/1/statuses/filter.json?track=%s"
-# streamThread = None
-
 
 def get_parser():
     the_parser = OptionParser()
@@ -46,6 +43,7 @@ def get_parser():
     the_parser.add_option("-a", "--dbauth", dest="dbauth", help="db auth file")
     the_parser.add_option("-o", "--oauth", dest="oauthfile", help="file with oauth options")
     the_parser.add_option("-t", "--track", dest="track", help="track terms file")
+    the_parser.add_option("-f", "--follow", dest="follow", help="follow users file")
     the_parser.add_option("-e", "--exclude-retweets", action="store_true", dest="exclude_retweets",
                           help="Exclude retweets from stream", default=False)
     the_parser.usage = "bad parametres"
@@ -59,7 +57,11 @@ def update_search_query(the_options, stream_thread):
 
     stream_thread.stop_consume()
 
-    stream_thread = StreamConsumerThreadClass(query, the_options.oauthfile)
+    follow = False
+    if the_options.follow and not the_options.track:
+        follow = True
+
+    stream_thread = StreamConsumerThreadClass(query, the_options.oauthfile, follow)
     stream_thread.setDaemon(True)
 
     stream_thread.start()
@@ -79,11 +81,11 @@ def delete_term(term):
     active_terms.pop(term)
 
 
-def update_terms(options, stream_thread):
+def update_terms(options, stream_thread, items_file):
     fileterms = []
 
     update = False
-    f = file(options.track, 'r')
+    f = file(items_file, 'r')
     for line in f.readlines():
         term = str.strip(line)
 
@@ -215,12 +217,12 @@ class MongoDBListener(StreamListener):
 
 # Class that track the stream
 class StreamConsumerThreadClass(threading.Thread):
-    def __init__(self, term='', oauthfile=''):
+    def __init__(self, term='', oauthfile='', follow=False):
         threading.Thread.__init__(self)
         self.searchterm = term
         self.name = term
         self.consume = True
-
+        self.follow = follow
         listener = MongoDBListener()
 
         try:
@@ -229,9 +231,9 @@ class StreamConsumerThreadClass(threading.Thread):
             if 'consumer_key' in oauth:
                 auth = OAuthHandler(oauth['consumer_key'], oauth['consumer_secret'])
                 auth.set_access_token(oauth['access_token'], oauth['access_token_secret'])
-                api = API(auth)
+                self.api = API(auth)
 
-                if not api.verify_credentials():
+                if not self.api.verify_credentials():
                     raise Exception("Invalid credentials")
 
                 self.stream = Stream(auth, listener, timeout=60)
@@ -252,7 +254,14 @@ class StreamConsumerThreadClass(threading.Thread):
             try:
                 if not connected:
                     connected = True
-                    self.stream.filter(track=[self.searchterm])
+                    if self.follow:
+                        user_ids = []
+                        for user in self.api.lookup_users([], self.searchterm.split(','), False):
+                            user_ids.append(user.id)
+
+                        self.stream.filter(follow=[",".join("{0}".format(n) for n in user_ids)])
+                    else:
+                        self.stream.filter(track=[self.searchterm])
 
             except SSLError, sse:
                 print sse
@@ -267,13 +276,25 @@ if __name__ == "__main__":
     (program_options, args) = parser.parse_args()
     print program_options, args
 
+    if program_options.follow and program_options.track:
+        print "--track and --follow options are incompatible yet, --track will be used"
+
+    if program_options.follow is None and program_options.track is None:
+        print "You must pass one of this options --track and --follow"
+        print "Exiting"
+        exit(0)
+
+    terms_file = program_options.follow
+    if program_options.track:
+        terms_file = program_options.track
+
     try:
         mongo = MongoDBCoordinator(program_options.server, program_options.port, program_options.database,
                                    program_options.dbauth)
         stream = StreamConsumerThreadClass('', program_options.oauthfile)
         try:
             while True:
-                update_terms(program_options, stream)
+                update_terms(program_options, stream, terms_file)
                 time.sleep(5)
 
         except KeyboardInterrupt, ke:
