@@ -1,4 +1,4 @@
-'''
+"""
 Twitter Stream To MongoDB (c) by gdelfresno
 
 This program is free software: you can redistribute it and/or modify
@@ -13,7 +13,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+"""
 
 import threading
 import datetime
@@ -35,111 +35,106 @@ json = import_simplejson()
 active_terms = {}
 
 STREAM_URL = "https://stream.twitter.com/1/statuses/filter.json?track=%s"
-streamThread = None
+# streamThread = None
 
 
 def get_parser():
-    parser = OptionParser()
-    parser.add_option("-d", "--database", dest="database", help="mongodb database name")
-    parser.add_option("-s", "--server", dest="server", help="mongodb host")
-    parser.add_option("-p", "--port", dest="port", help="mongodb port", type="int")
-    parser.add_option("-a", "--dbauth", dest="dbauth", help="db auth file")
-    parser.add_option("-o", "--oauth", dest="oauthfile", help="file with oauth options")
-    parser.add_option("-t", "--track", dest="track", help="track terms file")
-    #parser.add_option("-a", "--all_keys", dest="all_keys", help="MongoDB receives all keys from json (True/False)")
-    #parser.add_option("-u", "--use_keys", dest="use_keys", help="MongoDB receieves subset of keys from json (list)")
-    parser.add_option("-e", "--exclude-retweets", action="store_true", dest="exclude_retweets", help="Exclude retweets from stream", default=False)
-    parser.usage = "bad parametres"
-    return parser
+    the_parser = OptionParser()
+    the_parser.add_option("-d", "--database", dest="database", help="mongodb database name")
+    the_parser.add_option("-s", "--server", dest="server", help="mongodb host")
+    the_parser.add_option("-p", "--port", dest="port", help="mongodb port", type="int")
+    the_parser.add_option("-a", "--dbauth", dest="dbauth", help="db auth file")
+    the_parser.add_option("-o", "--oauth", dest="oauthfile", help="file with oauth options")
+    the_parser.add_option("-t", "--track", dest="track", help="track terms file")
+    the_parser.add_option("-e", "--exclude-retweets", action="store_true", dest="exclude_retweets",
+                          help="Exclude retweets from stream", default=False)
+    the_parser.usage = "bad parametres"
+    return the_parser
 
 
-def updateSearchQuery(options):
+def update_search_query(the_options, stream_thread):
     print 'Updating terms: %s' % datetime.datetime.now()
 
     query = ",".join(active_terms.keys())
 
-    try:
-        streamThread.stopConsume()
+    stream_thread.stop_consume()
 
-    except:
-        pass
+    stream_thread = StreamConsumerThreadClass(query, the_options.oauthfile)
+    stream_thread.setDaemon(True)
 
-    streamThread = StreamConsumerThreadClass(query, options.oauthfile)
-    streamThread.setDaemon(True)
-    
-    streamThread.start()
+    stream_thread.start()
 
 
-def addTerm(term):
+def add_term(term):
     if term == '':
         return
 
     active_terms[term] = term
 
 
-def deleteTerm(term):
+def delete_term(term):
     if term == '':
         return
 
     active_terms.pop(term)
 
 
-def updateTerms(options):
-    
+def update_terms(options, stream_thread):
     fileterms = []
-    
+
     update = False
     f = file(options.track, 'r')
     for line in f.readlines():
-        term = str.strip(line) 
-        
+        term = str.strip(line)
+
         fileterms.append(term)
-        #Check new terms
-        if not term in active_terms.keys():
+        # Check new terms
+        if term not in active_terms.keys():
             print "New Term: %s" % term
-            addTerm(term)
+            add_term(term)
             update = True
-    
+
     for current in active_terms.keys():
-        if not current in fileterms:
+        if current not in fileterms:
             print "Deleted term: %s" % current
-            deleteTerm(current)
+            delete_term(current)
             update = True
-     
+
     if update:
-        updateSearchQuery(options)
+        update_search_query(options, stream_thread)
 
 
-def prettyPrintStatus(status):
+def pretty_print_status(status):
     text = status["text"]
     description = status['user']['screen_name']
     if "retweeted_status" in status:
-        description = ("%s RT by %s") % (status["retweeted_status"]["user"]["screen_name"], status['user']['screen_name'])
+        description = "%s RT by %s" % (
+            status["retweeted_status"]["user"]["screen_name"], status['user']['screen_name'])
         text = status["retweeted_status"]["text"]
 
     try:
         return '[%s][%-36s]: %s' % (status['created_at'], description, text)
     except UnicodeEncodeError:
         return "Can't decode UNICODE tweet"
-    except :
-        return "Error printing status"
+    # except:
+    #     return "Error printing status"
 
 
 class MongoDBCoordinator:
     def __init__(self, host='localhost', port=None, database='TwitterStream', authfile=None):
         try:
-            if not port is None:
+            if port is not None:
                 self.mongo = MongoClient(host, int(port))
             else:
                 self.mongo = MongoClient(host)
         except:
             print "Error starting MongoDB"
             raise
-        
+
         self.db = self.mongo[database]
 
-        if not authfile is None:
-            
+        if authfile is not None:
+
             try:
                 dbauth = json.loads(open(authfile, 'r').read())
                 if not self.db.authenticate(dbauth["user"], dbauth["password"]):
@@ -148,13 +143,12 @@ class MongoDBCoordinator:
             except:
                 print "Error authenticating database"
                 raise
-        
+
         self.tuits = {}
 
-
-    def addTuit(self, tweet):
+    def add_tuit(self, tweet):
         for term in active_terms.keys():
-            
+
             if "retweeted_status" in tweet:
                 content = tweet["retweeted_status"]["text"]
             else:
@@ -164,15 +158,15 @@ class MongoDBCoordinator:
             match = strre.search(content)
 
             if match:
-                if not term in self.db.collection_names():
+                if term not in self.db.collection_names():
                     self.db.create_collection(term)
 
                 collection = self.db[term]
                 collection.save(tweet)
 
                 try:
-                    print "[%-15s]%s" % (term, prettyPrintStatus(tweet))           
-                except Exception as (e):
+                    print "[%-15s]%s" % (term, pretty_print_status(tweet))
+                except Exception, e:
                     print "Error %s" % e.message
 
 
@@ -181,6 +175,7 @@ class MongoDBListener(StreamListener):
     A listener handles tweets are the received from the stream. 
     This is a basic listener that just prints received tweets to stdout.
     """
+
     def on_data(self, data):
         """
         Called when raw data is received from connection.
@@ -189,15 +184,15 @@ class MongoDBListener(StreamListener):
         the stream data. Return False to stop stream and close connection.
         """
         if 'retweeted_status' in data:
-            if options.exclude_retweets:
+            if program_options.exclude_retweets:
                 pass
             else:
                 jstatus = json.loads(data)
-                mongo.addTuit(jstatus)
+                mongo.add_tuit(jstatus)
 
         elif 'in_reply_to_status_id' in data:
             jstatus = json.loads(data)
-            mongo.addTuit(jstatus)
+            mongo.add_tuit(jstatus)
 
         elif 'delete' in data:
             delete = json.loads(data)['delete']['status']
@@ -210,28 +205,27 @@ class MongoDBListener(StreamListener):
 
     def on_error(self, status_code):
         if status_code == 401:
-            raise Exception("Invalid loging credentials")    
+            raise Exception("Invalid loging credentials")
         else:
             print "Error received %d" % status_code
-        
 
     def on_limit(self, track):
         print "###### LIMIT ERROR #######"
 
 
-#Class that track the stream
+# Class that track the stream
 class StreamConsumerThreadClass(threading.Thread):
     def __init__(self, term='', oauthfile=''):
         threading.Thread.__init__(self)
         self.searchterm = term
         self.name = term
         self.consume = True
-        
+
         listener = MongoDBListener()
-        
+
         try:
             oauth = json.loads(open(oauthfile, 'r').read())
-            
+
             if 'consumer_key' in oauth:
                 auth = OAuthHandler(oauth['consumer_key'], oauth['consumer_secret'])
                 auth.set_access_token(oauth['access_token'], oauth['access_token_secret'])
@@ -240,52 +234,52 @@ class StreamConsumerThreadClass(threading.Thread):
                 if not api.verify_credentials():
                     raise Exception("Invalid credentials")
 
+                self.stream = Stream(auth, listener, timeout=60)
+
         except:
             print "Error logging to Twitter"
             raise
-    
-        self.stream = Stream(auth, listener, timeout=60)  
 
-
-    def stopConsume(self):
+    def stop_consume(self):
         self.stream.disconnect()
-
 
     def run(self):
         now = datetime.datetime.now()
         print "Twitter Stream with terms: %s started at: %s" % (self.getName(), now)
-        
+
         connected = False
         while True:
-            try: 
+            try:
                 if not connected:
                     connected = True
                     self.stream.filter(track=[self.searchterm])
-            
-            except SSLError, e:
-                print e
+
+            except SSLError, sse:
+                print sse
                 connected = False
             except Exception, e:
                 print "Stream error"
                 raise e
 
+
 if __name__ == "__main__":
     parser = get_parser()
-    (options, args) = parser.parse_args()
-    print options, args
-    
+    (program_options, args) = parser.parse_args()
+    print program_options, args
+
     try:
-        mongo = MongoDBCoordinator(options.server, options.port, options.database, options.dbauth)
-        streamThread = StreamConsumerThreadClass('', options.oauthfile)
-    except Exception, e:
-        print e
+        mongo = MongoDBCoordinator(program_options.server, program_options.port, program_options.database,
+                                   program_options.dbauth)
+        stream = StreamConsumerThreadClass('', program_options.oauthfile)
+        try:
+            while True:
+                update_terms(program_options, stream)
+                time.sleep(5)
+
+        except KeyboardInterrupt, ke:
+            print "Closing stream"
+            stream.stop_consume()
+    except Exception, t:
+        print t
         exit(0)
 
-    try:
-        while True:
-            updateTerms(options)
-            time.sleep(5)
-
-    except KeyboardInterrupt, e:
-        print "Closing stream"
-        streamThread.stopConsume()
