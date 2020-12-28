@@ -2,4 +2,4 @@ lxml==3.4.3
 pygexf==0.2.2
 pymongo==3.0.1
 simplejson==3.6.5
-tweepy==3.3.0
+tweepy==3.10.0
