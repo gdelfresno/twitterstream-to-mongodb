@@ -1,0 +1,14 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: pymongo
+    versions:
+    - 3.11.2
+  - dependency-name: lxml
+    versions:
+    - 4.6.1
